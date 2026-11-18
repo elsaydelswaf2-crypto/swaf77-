@@ -24,7 +24,7 @@ def main():
         raise FileNotFoundError(f"Missing Piper model: {MODEL}")
     source = (ROOT / "app.js").read_text(encoding="utf-8")
     start = source.index("const L=") + len("const L=")
-    end = source.index(";\nconst K=", start)
+    end = source.index(";\nconst ALPHABET_NAMES=", start)
     lessons = json.loads(source[start:end])
     names_match = re.search(r"const ALPHABET_NAMES=(\[.*?\]);", source)
     if not names_match:
