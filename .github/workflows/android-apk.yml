@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: android-apk-${{ github.ref }}
+  group: android-apk-recovery-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -50,14 +50,14 @@ jobs:
         run: |
           node - <<'NODE'
           const project = "https://github.com/elsaydelswaf2-crypto/swaf77-";
-          const message = "تعرف على تطبيق Türkçe Akademi لتعلم التركية بالعربية: " + project;
+          const message = "تعرف على تطبيق تعلم لغات لتعلم اللغات بالعربية: " + project;
           const share = new URL("https://wa.me/?text=" + encodeURIComponent(message));
           if (share.hostname !== "wa.me" || !share.searchParams.get("text")?.includes(project)) {
             throw new Error("WhatsApp share URL is invalid");
           }
           console.log("WhatsApp share URL valid:", share.toString());
           NODE
-          curl -sSL --max-time 25 -o /dev/null -w "WhatsApp endpoint HTTP %{http_code}\n" "https://wa.me/?text=Turkce%20Akademi%20https%3A%2F%2Fgithub.com%2Felsaydelswaf2-crypto%2Fswaf77-" || echo "WhatsApp endpoint could not be reached from the build runner."
+          curl -sSL --max-time 25 -o /dev/null -w "WhatsApp endpoint HTTP %{http_code}\n" "https://wa.me/?text=Learn%20Languages%20https%3A%2F%2Fgithub.com%2Felsaydelswaf2-crypto%2Fswaf77-" || echo "WhatsApp endpoint could not be reached from the build runner."
 
       - name: Set up Python
         uses: actions/setup-python@v5
