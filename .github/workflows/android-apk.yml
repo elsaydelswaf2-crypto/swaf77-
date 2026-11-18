@@ -51,11 +51,12 @@ jobs:
 
       - name: Generate offline Turkish pronunciation files
         run: |
-          python3 -m pip install --disable-pip-version-check piper-tts
+          python3 -m venv .venv
+          .venv/bin/pip install --disable-pip-version-check piper-tts
           mkdir -p models
           curl -fL --retry 3 -o models/tr_TR-fahrettin-medium.onnx "https://huggingface.co/rhasspy/piper-voices/resolve/1af0d6b01d3dbe698a426f0c3424650ef77fc131/tr/tr_TR/fahrettin/medium/tr_TR-fahrettin-medium.onnx"
           curl -fL --retry 3 -o models/tr_TR-fahrettin-medium.onnx.json "https://huggingface.co/rhasspy/piper-voices/resolve/1af0d6b01d3dbe698a426f0c3424650ef77fc131/tr/tr_TR/fahrettin/medium/tr_TR-fahrettin-medium.onnx.json"
-          python3 scripts/generate_turkish_audio.py
+          .venv/bin/python scripts/generate_turkish_audio.py
 
       - name: Prepare Capacitor Android project
         run: |
