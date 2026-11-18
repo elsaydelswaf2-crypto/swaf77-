@@ -27,11 +27,9 @@ for index, lesson in enumerate(lessons, 1):
     for question in lesson["q"]:
         assert len(question) == 3 and question[2] in range(len(question[1])), f"Bad quiz answer in {lesson['t']}"
 
-assert "navigator.share" in source and "https://github.com/elsaydelswaf2-crypto/swaf77-" in source, "Share sheet must contain only the public repository link"
-assert "mailto:" not in source, "Email share target must not be offered"
-assert "https://wa.me/" not in source, "External share target must be removed"
-assert "navigator.clipboard.writeText(url)" in source and "execCommand(\"copy\")" in source, "Copy-link fallback missing"
-assert 'text:"رابط تطبيق تعلم لغات:"' in source and "mailto:" not in source and "https://wa.me/" not in source, "Share content must not contain personal email or direct external targets"
+assert "https://wa.me/?text=" in source and "encodeURIComponent(message)" in source, "WhatsApp direct share is missing"
+assert "navigator.share" not in source and "mailto:" not in source, "Generic share sheet or email target must not be offered"
+assert 'const message="رابط تطبيق تعلم لغات:\\n"+url' in source, "WhatsApp message must contain only the fixed text and repository URL"
 assert "copyShare" in Path("index.html").read_text(encoding="utf-8"), "Share button is missing"
 html = Path("index.html").read_text(encoding="utf-8")
 assert "تعلم لغات" in html and "Türkçe Akademi" not in html, "Visible app name was not fully updated"
