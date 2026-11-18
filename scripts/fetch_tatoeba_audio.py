@@ -22,20 +22,20 @@ def rows_from_archive(data):
         stream = archive.extractfile(member)
         for raw in stream:
             try:
-                yield raw.decode("utf-8").rstrip("\\r\\n").split("\\t")
+                yield raw.decode("utf-8").rstrip("\r\n").split("\t")
             except UnicodeDecodeError:
                 continue
 
 def norm(value):
     value = unicodedata.normalize("NFKC", value).casefold().strip()
-    value = re.sub(r"^[\\W_]+|[\\W_]+$", "", value, flags=re.UNICODE)
-    value = re.sub(r"\\s+", " ", value)
+    value = re.sub(r"^[\W_]+|[\W_]+$", "", value, flags=re.UNICODE)
+    value = re.sub(r"\s+", " ", value)
     return value
 
 def main():
     source = (ROOT / "app.js").read_text(encoding="utf-8")
     start = source.index("const L=") + len("const L=")
-    end = source.index(";\\nconst K=", start)
+    end = source.index(";\nconst K=", start)
     lessons = json.loads(source[start:end])
     wanted = {}
     for lesson in lessons:
@@ -118,7 +118,7 @@ def main():
     (AUDIO / "manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    (AUDIO / "CREDITS.txt").write_text("\\n".join(credits) + "\\n", encoding="utf-8")
+    (AUDIO / "CREDITS.txt").write_text("\n".join(credits) + "\n", encoding="utf-8")
     print(f"Added {len(manifest)} licensed human-recorded Turkish clips for {len(wanted)} vocabulary items.")
 
 if __name__ == "__main__":
