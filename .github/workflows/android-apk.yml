@@ -79,7 +79,7 @@ jobs:
           if [ -d audio ]; then cp -R audio www/audio; fi
           npm init -y
           npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
-          npx cap init "Türkçe Akademi" com.turkce.akademi --web-dir=www
+          npx cap init "تعلم لغات" com.turkce.akademi --web-dir=www
           npx cap add android
           npx cap sync android
 
@@ -92,7 +92,7 @@ jobs:
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
-          name: Turkce-Akademi-Android-APK
+          name: Learn-Languages-Android-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
