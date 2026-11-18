@@ -46,19 +46,19 @@ jobs:
           python3 -m py_compile scripts/generate_turkish_audio.py scripts/validate_curriculum.py
           python3 scripts/validate_curriculum.py
 
-      - name: Verify copy-only privacy controls
+      - name: Verify safe share-link controls
         run: |
           node - <<'NODE'
           const fs = require("fs");
           const app = fs.readFileSync("app.js", "utf8");
           const html = fs.readFileSync("index.html", "utf8");
-          for (const forbidden of ["navigator.share", "mailto:", "https://wa.me/", "shareApp"]) {
+          for (const forbidden of ["mailto:", "https://wa.me/", "shareApp"]) {
             if (app.includes(forbidden) || html.includes(forbidden)) throw new Error("Forbidden share entry point: " + forbidden);
           }
-          if (!app.includes('navigator.clipboard.writeText(url)') || !app.includes('document.execCommand("copy")')) {
+          if (!app.includes('navigator.share') || !app.includes('https://github.com/elsaydelswaf2-crypto/swaf77-') || !app.includes('navigator.clipboard.writeText(url)') || !app.includes('document.execCommand("copy")')) {
             throw new Error("Copy-link action or Android fallback is missing");
           }
-          console.log("Copy-only sharing verified; no email or external share intent.");
+          console.log("Share-sheet contains the public repository URL only; no email or direct external target is embedded.");
           NODE
 
       - name: Set up Python
