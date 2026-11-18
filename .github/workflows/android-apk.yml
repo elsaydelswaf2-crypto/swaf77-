@@ -49,8 +49,13 @@ jobs:
           NODE
           curl -sSL --max-time 25 -o /dev/null -w "WhatsApp endpoint HTTP %{http_code}\n" "https://wa.me/?text=Turkce%20Akademi%20https%3A%2F%2Fgithub.com%2Felsaydelswaf2-crypto%2Fswaf77-" || echo "WhatsApp endpoint could not be reached from the build runner."
 
-      - name: Fetch licensed human Turkish audio
-        run: python3 scripts/fetch_tatoeba_audio.py
+      - name: Generate offline Turkish pronunciation files
+        run: |
+          python3 -m pip install --disable-pip-version-check piper-tts
+          mkdir -p models
+          curl -fL --retry 3 -o models/tr_TR-fahrettin-medium.onnx "https://huggingface.co/rhasspy/piper-voices/resolve/1af0d6b01d3dbe698a426f0c3424650ef77fc131/tr/tr_TR/fahrettin/medium/tr_TR-fahrettin-medium.onnx"
+          curl -fL --retry 3 -o models/tr_TR-fahrettin-medium.onnx.json "https://huggingface.co/rhasspy/piper-voices/resolve/1af0d6b01d3dbe698a426f0c3424650ef77fc131/tr/tr_TR/fahrettin/medium/tr_TR-fahrettin-medium.onnx.json"
+          python3 scripts/generate_turkish_audio.py
 
       - name: Prepare Capacitor Android project
         run: |
