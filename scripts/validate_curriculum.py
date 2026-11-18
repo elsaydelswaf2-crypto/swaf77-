@@ -22,8 +22,8 @@ assert len(numbers["q"]) >= 5, "Number quiz is too short"
 
 for index, lesson in enumerate(lessons, 1):
     assert lesson.get("t") and lesson.get("d"), f"Lesson {index} missing title or description"
-    assert lesson.get("w"), f"Lesson {index} has no vocabulary"
-    assert lesson.get("q"), f"Lesson {index} has no quiz"
+    assert len(lesson.get("w", [])) >= 12, f"Lesson {index} needs at least 12 vocabulary items"
+    assert len(lesson.get("q", [])) >= 5, f"Lesson {index} needs at least 5 quiz questions"
     for question in lesson["q"]:
         assert len(question) == 3 and question[2] in range(len(question[1])), f"Bad quiz answer in {lesson['t']}"
 
