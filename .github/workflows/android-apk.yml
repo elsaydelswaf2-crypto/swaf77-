@@ -36,7 +36,19 @@ jobs:
           yes | "$SDKMANAGER" --licenses || true
           "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Fetch licensed human Turkish audio
+      - name: Verify WhatsApp share link
+        run: |
+          node - <<'NODE'
+          const project = "https://github.com/elsaydelswaf2-crypto/swaf77-";
+          const message = "تعرف على تطبيق Türkçe Akademi لتعلم التركية بالعربية: " + project;
+          const share = new URL("https://wa.me/?text=" + encodeURIComponent(message));
+          if (share.hostname !== "wa.me" || !share.searchParams.get("text")?.includes(project)) {
+            throw new Error("WhatsApp share URL is invalid");
+          }
+          console.log("WhatsApp share URL valid:", share.toString());
+          NODE
+          curl -sSL --max-time 25 -o /dev/null -w "WhatsApp endpoint HTTP %{http_code}\n" "https://wa.me/?text=Turkce%20Akademi%20https%3A%2F%2Fgithub.com%2Felsaydelswaf2-crypto%2Fswaf77-" || echo "WhatsApp endpoint could not be reached from the build runner."
+\n      - name: Fetch licensed human Turkish audio
         run: python3 scripts/fetch_tatoeba_audio.py
 
       - name: Prepare Capacitor Android project
