@@ -27,7 +27,7 @@ def rows_from_archive(data):
                 continue
 
 def norm(value):
-    value = unicodedata.normalize("NFKC", value).casefold().strip()
+    value = unicodedata.normalize("NFKC", value).translate(str.maketrans({"I": "ı", "İ": "i"})).lower().strip()
     value = re.sub(r"^[\W_]+|[\W_]+$", "", value, flags=re.UNICODE)
     value = re.sub(r"\s+", " ", value)
     return value
