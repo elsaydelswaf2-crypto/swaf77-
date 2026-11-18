@@ -14,7 +14,7 @@ actual = [x[0] for x in alphabet["w"]]
 assert actual == expected, f"Turkish alphabet mismatch: {actual}"
 assert len(alphabet["q"]) >= 5, "Alphabet quiz is too short"
 
-names_match = __import__("re").search(r"const ALPHABET_NAMES=(\\[.*?\\]);", source)
+names_match = __import__("re").search(r"const ALPHABET_NAMES=(\[.*?\]);", source)
 assert names_match, "Canonical one-time alphabet pronunciation map is missing"
 letter_names = dict(json.loads(names_match.group(1)))
 assert set(letter_names) == set(expected), "Alphabet pronunciation map must cover all 29 letters exactly once"
