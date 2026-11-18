@@ -27,13 +27,14 @@ for index, lesson in enumerate(lessons, 1):
     for question in lesson["q"]:
         assert len(question) == 3 and question[2] in range(len(question[1])), f"Bad quiz answer in {lesson['t']}"
 
-assert "navigator.share" not in source, "Generic Android share sheet can expose email/account targets"
+assert "navigator.share" in source and "https://github.com/elsaydelswaf2-crypto/swaf77-" in source, "Share sheet must contain only the public repository link"
 assert "mailto:" not in source, "Email share target must not be offered"
 assert "https://wa.me/" not in source, "External share target must be removed"
 assert "navigator.clipboard.writeText(url)" in source and "execCommand(\"copy\")" in source, "Copy-link fallback missing"
-assert "shareApp" not in Path("index.html").read_text(encoding="utf-8"), "Share action must be removed from the UI"
+assert 'text:"رابط تطبيق تعلم لغات:"' in source and "mailto:" not in source and "https://wa.me/" not in source, "Share content must not contain personal email or direct external targets"
+assert "copyShare" in Path("index.html").read_text(encoding="utf-8"), "Share button is missing"
 html = Path("index.html").read_text(encoding="utf-8")
 assert "تعلم لغات" in html and "Türkçe Akademi" not in html, "Visible app name was not fully updated"
 manifest = json.loads(Path("manifest.webmanifest").read_text(encoding="utf-8"))
 assert manifest["name"] == "تعلم لغات" and manifest["short_name"] == "تعلم لغات"
-print(f"PASS: {len(lessons)} lessons; all 29 Turkish letters; sequential 0–20; quiz integrity; copy-link-only privacy; app rename.")
+print(f"PASS: {len(lessons)} lessons; all 29 Turkish letters; sequential 0–20; quiz integrity; share-link privacy; app rename.")
