@@ -14,6 +14,14 @@ actual = [x[0] for x in alphabet["w"]]
 assert actual == expected, f"Turkish alphabet mismatch: {actual}"
 assert len(alphabet["q"]) >= 5, "Alphabet quiz is too short"
 
+names_match = __import__("re").search(r"const ALPHABET_NAMES=(\\[.*?\\]);", source)
+assert names_match, "Canonical one-time alphabet pronunciation map is missing"
+letter_names = dict(json.loads(names_match.group(1)))
+assert set(letter_names) == set(expected), "Alphabet pronunciation map must cover all 29 letters exactly once"
+assert letter_names["A a"] == "a" and letter_names["B b"] == "be" and letter_names["Ğ ğ"] == "yumuşak ge", "Alphabet letter names are incorrect"
+assert "pronunciationText(l.t,tr)" in source, "Alphabet audio must use its single letter name"
+assert "currentAudio.pause()" in source, "Previous audio must stop before a new word is played"
+
 numbers = next(x for x in lessons if x["t"] == "الأرقام 1–20")
 expected_numbers = ["Sıfır","Bir","İki","Üç","Dört","Beş","Altı","Yedi","Sekiz","Dokuz","On","On bir","On iki","On üç","On dört","On beş","On altı","On yedi","On sekiz","On dokuz","Yirmi"]
 actual_numbers = [x[0] for x in numbers["w"]]
