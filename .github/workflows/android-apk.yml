@@ -48,7 +48,8 @@ jobs:
           console.log("WhatsApp share URL valid:", share.toString());
           NODE
           curl -sSL --max-time 25 -o /dev/null -w "WhatsApp endpoint HTTP %{http_code}\n" "https://wa.me/?text=Turkce%20Akademi%20https%3A%2F%2Fgithub.com%2Felsaydelswaf2-crypto%2Fswaf77-" || echo "WhatsApp endpoint could not be reached from the build runner."
-\n      - name: Fetch licensed human Turkish audio
+
+      - name: Fetch licensed human Turkish audio
         run: python3 scripts/fetch_tatoeba_audio.py
 
       - name: Prepare Capacitor Android project
