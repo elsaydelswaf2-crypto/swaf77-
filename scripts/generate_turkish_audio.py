@@ -26,7 +26,7 @@ def main():
     start = source.index("const L=") + len("const L=")
     end = source.index(";\nconst K=", start)
     lessons = json.loads(source[start:end])
-    names_match = re.search(r"const ALPHABET_NAMES=(\\[.*?\\]);", source)
+    names_match = re.search(r"const ALPHABET_NAMES=(\[.*?\]);", source)
     if not names_match:
         raise RuntimeError("Missing canonical Turkish alphabet letter names")
     alphabet_names = dict(json.loads(names_match.group(1)))
