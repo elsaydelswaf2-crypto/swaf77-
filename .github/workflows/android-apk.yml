@@ -36,10 +36,14 @@ jobs:
           yes | "$SDKMANAGER" --licenses || true
           "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Fetch licensed human Turkish audio\n        run: python3 scripts/fetch_tatoeba_audio.py\n\n      - name: Prepare Capacitor Android project
+      - name: Fetch licensed human Turkish audio
+        run: python3 scripts/fetch_tatoeba_audio.py
+
+      - name: Prepare Capacitor Android project
         run: |
           mkdir -p www
-          cp index.html app.js style.css manifest.webmanifest sw.js www/\n          if [ -d audio ]; then cp -R audio www/audio; fi
+          cp index.html app.js style.css manifest.webmanifest sw.js www/
+          if [ -d audio ]; then cp -R audio www/audio; fi
           npm init -y
           npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
           npx cap init "Türkçe Akademi" com.turkce.akademi --web-dir=www
