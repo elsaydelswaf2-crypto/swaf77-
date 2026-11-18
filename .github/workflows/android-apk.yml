@@ -49,7 +49,12 @@ jobs:
           NODE
           curl -sSL --max-time 25 -o /dev/null -w "WhatsApp endpoint HTTP %{http_code}\n" "https://wa.me/?text=Turkce%20Akademi%20https%3A%2F%2Fgithub.com%2Felsaydelswaf2-crypto%2Fswaf77-" || echo "WhatsApp endpoint could not be reached from the build runner."
 
-      - name: Set up Python\n        uses: actions/setup-python@v5\n        with:\n          python-version: '3.11'\n\n      - name: Generate offline Turkish pronunciation files
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Generate offline Turkish pronunciation files
         run: |
           python3 -m venv .venv
           .venv/bin/pip install --disable-pip-version-check piper-tts
