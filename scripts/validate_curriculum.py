@@ -5,7 +5,7 @@ from pathlib import Path
 
 source = Path("app.js").read_text(encoding="utf-8")
 start = source.index("const L=") + len("const L=")
-end = source.index(";\nconst K=", start)
+end = source.index(";\nconst ALPHABET_NAMES=", start)
 lessons = json.loads(source[start:end])
 
 alphabet = next(x for x in lessons if x["t"] == "الأبجدية التركية")
