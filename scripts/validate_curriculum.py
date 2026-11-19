@@ -44,3 +44,7 @@ assert "تعلم لغات" in html and "Türkçe Akademi" not in html, "Visible 
 manifest = json.loads(Path("manifest.webmanifest").read_text(encoding="utf-8"))
 assert manifest["name"] == "تعلم لغات" and manifest["short_name"] == "تعلم لغات"
 print(f"PASS: {len(lessons)} lessons; all 29 Turkish letters; sequential 0–20; quiz integrity; share-link privacy; app rename.")
+
+assert "voicePicker" in Path("index.html").read_text(encoding="utf-8"), "Voice selector is missing"
+assert "getVoices()" in source and "voiceschanged" in source, "Device Turkish voice discovery is missing"
+assert 'selectedVoice==="recorded"?humanAudio[audioKey(tr)]:null' in source, "Selected device voice must bypass the default recorded voice"
