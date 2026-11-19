@@ -2,3 +2,5 @@
 .share-area{margin-top:16px}.share-area>button{background:#17634d}.share-area #shareOptions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.share-area #shareOptions[hidden]{display:none}.share-area a{display:inline-block;text-decoration:none;border:1px solid #dce7df;border-radius:10px;padding:9px 13px;color:#214238;background:#f5f8f5;font-size:14px}.share-area #copyShare{font-size:14px;padding:9px 13px}#shareStatus{font-size:13px;color:#34745c;min-height:18px}
 
 .examples{margin-top:20px;padding:16px;background:#f8faf8;border:1px solid #e4ece6;border-radius:14px}.examples h3{margin:0 0 10px}.examples p{padding:9px 0;margin:0;border-bottom:1px solid #e7eee8;line-height:1.8}.examples p:last-child{border:0}.examples strong{direction:ltr;display:inline-block}
+
+.voice-area{margin:16px 0;padding:14px;background:#f4f8f4;border:1px solid #e0e9e2;border-radius:14px}.voice-area label{display:block;font-weight:bold;margin-bottom:8px}.voice-area select{width:100%;max-width:420px;padding:10px;border:1px solid #cbd9cf;border-radius:9px;background:white;color:#18332e;font:inherit}.voice-area p{font-size:12px;color:#718078;margin:8px 0 0;line-height:1.6}
