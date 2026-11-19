@@ -37,7 +37,7 @@ for index, lesson in enumerate(lessons, 1):
 
 assert "https://wa.me/?text=" in source and "encodeURIComponent(message)" in source, "WhatsApp direct share is missing"
 assert "navigator.share" not in source and "mailto:" not in source, "Generic share sheet or email target must not be offered"
-assert 'const message="رابط تطبيق تعلم لغات:\\n"+url' in source, "WhatsApp message must contain only the fixed text and repository URL"
+assert 'const message="حمّل تطبيق تعلم لغات للأندرويد من هنا:\\n"+url' in source and "releases/latest/download/app-debug.apk" in source, "WhatsApp message must contain the direct APK download link"
 assert "copyShare" in Path("index.html").read_text(encoding="utf-8"), "Share button is missing"
 html = Path("index.html").read_text(encoding="utf-8")
 assert "تعلم لغات" in html and "Türkçe Akademi" not in html, "Visible app name was not fully updated"
