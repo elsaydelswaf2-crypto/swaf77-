@@ -3,6 +3,7 @@
 import hashlib
 import json
 import re
+import subprocess
 import unicodedata
 import wave
 from pathlib import Path
@@ -41,10 +42,13 @@ def main():
     voice = PiperVoice.load(str(MODEL))
     manifest = {}
     for key, phrase in wanted.items():
-        filename = hashlib.sha256(key.encode("utf-8")).hexdigest()[:16] + ".wav"
+        filename = hashlib.sha256(key.encode("utf-8")).hexdigest()[:16] + ".mp3"
         target = AUDIO / filename
-        with wave.open(str(target), "wb") as wav_file:
+        temporary = AUDIO / (filename + ".wav")
+        with wave.open(str(temporary), "wb") as wav_file:
             voice.synthesize_wav(phrase, wav_file)
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(temporary), "-codec:a", "libmp3lame", "-qscale:a", "4", str(target)], check=True)
+        temporary.unlink()
         manifest[key] = {
             "file": "./audio/" + filename,
             "text": phrase,
@@ -66,7 +70,7 @@ def main():
         ""
     ]
     (AUDIO / "CREDITS.txt").write_text("\n".join(credits), encoding="utf-8")
-    print(f"Generated {len(manifest)} offline Turkish WAV pronunciation files.")
+    print(f"Generated {len(manifest)} offline Turkish MP3 pronunciation files.")
 
 if __name__ == "__main__":
     main()
