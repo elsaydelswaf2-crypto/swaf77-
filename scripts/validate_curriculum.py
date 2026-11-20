@@ -27,6 +27,9 @@ assert "https://wa.me/?text=" in source and "encodeURIComponent(message)" in sou
 assert "releases/latest/download/app-debug.apk" in source
 assert "navigator.share" not in source and "mailto:" not in source
 assert "audioKey(clipKey)" in source
+assert "arabicVoicePicker" in html and "arabicVoiceHint" in html
+assert "selectedArabicVoice" in source and "ta-arabic-voice" in source
+assert "turkishVoices[Number(selectedVoice)]" in source and "arabicVoices[Number(selectedArabicVoice)]" in source
 manifest=json.loads(Path("manifest.webmanifest").read_text(encoding="utf-8"))
 assert manifest["name"]=="تعلم لغات"
 print(f"PASS: {len(lessons)} Turkish lessons, 4 English lessons, 29 Turkish letters, 4 directions, unit audio queue, WhatsApp APK share.")
