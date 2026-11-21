@@ -9,7 +9,8 @@ end=source.index(";\nconst ALPHABET_NAMES=",start)
 tr=json.loads(source[start:end])
 expected=["A a","B b","C c","Ç ç","D d","E e","F f","G g","Ğ ğ","H h","I ı","İ i","J j","K k","L l","M m","N n","O o","Ö ö","P p","R r","S s","Ş ş","T t","U u","Ü ü","V v","Y y","Z z"]
 alphabet=next(x for x in tr if x["t"]=="الأبجدية التركية")
-assert [x[0] for x in alphabet["w"]]==expected
+assert tr[0]["t"]=="الأرقام من 1 إلى 100" and len(tr[0]["w"])==100
+assert tr[1] is alphabet and [x[0] for x in alphabet["w"]]==expected
 m=re.search(r"const ALPHABET_NAMES=(\[.*?\]);",source,re.S); assert m
 names=dict(json.loads(m.group(1)))
 assert set(names)==set(expected) and names["A a"]=="a" and names["Ğ ğ"]=="yumuşak ge"
@@ -27,7 +28,9 @@ assert 'option value="ar">العربية' in html and 'id="englishVoicePicker"' 
 assert 'id="previewTarget"' in html and 'id="previewMeaning"' in html
 assert 'synth.addEventListener?.("voiceschanged",retry,{once:true})' in source and 'synth.resume()' in source and 'queueUtterance.rate=rate' in source and 'queueAudio.playbackRate=Math.max(rate,0.78)' in source
 assert 'rate:0.68' in source and 'rate:0.74' in source
-assert 'const seq=[{text:p[0],lang:ll[0],rate:0.68},{text:p[0],lang:ll[0],rate:0.68},{text:p[1],lang:ll[1],rate:0.74},{text:p[1],lang:ll[1],rate:0.74}]' in source
+assert 'function pushAudioPair(t0,t1,ll,p){queue.push({text:t0,lang:ll[0],clip:p[0],rate:0.68},{text:t1,lang:ll[1],clip:p[1],rate:0.74})}' in source
+assert 'audioOrderPicker' not in source and 'audioOrderPicker' not in html
+assert 'الأرقام من 1 إلى 100' in source
 assert 'speechSynthesis.cancel()' in source and 'audioKey(clipKey)' in source
 assert 'https://wa.me/?text=' not in source and 'copyShare' not in html and 'shareStatus' not in html
 assert 'location.href="https://wa.me/' not in source and 'navigator.share' not in source and 'mailto:' not in source
