@@ -34,12 +34,6 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Install Android SDK components
-        run: |
-          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
-          test -n "$SDKMANAGER"
-          yes | "$SDKMAN" --licenses || true
-          "$SDKMAN" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Validate application sources
         run: |
