@@ -7,20 +7,62 @@ const K="ta-progress-v3";let humanAudio={},currentAudio=null;fetch("./audio/mani
 const audioKey=s=>s.normalize("NFKC").toLocaleLowerCase("tr").trim().replace(/^[.,!?;:()\"“”]+|[.,!?;:()\"“”]+$/g,"").replace(/ +/g," ");
 let done={};try{done=JSON.parse(localStorage.getItem(K)||"{}")}catch(e){}
 let cur=0,qi=0,locked=false,score=0,course="tr",direction="tr-ar",queue=[],queueIndex=0,playing=false,paused=false,queueAudio=null,queueUtterance=null;
-const $=s=>document.querySelector(s);let selectedVoice="recorded",turkishVoices=[];
-function refreshTurkishVoices(){if(!("speechSynthesis"in window))return;turkishVoices=speechSynthesis.getVoices().filter(v=>/^tr([_-]|$)/i.test(v.lang));const picker=$("#voicePicker");if(!picker)return;const previous=picker.value;picker.replaceChildren();const rec=document.createElement("option");rec.value="recorded";rec.textContent="ملفات MP3 تركية مولّدة مسبقًا — Fahrettin";picker.append(rec);turkishVoices.forEach((v,i)=>{const o=document.createElement("option");o.value=String(i);o.textContent=(/female|woman|kadın|zira|filiz|seda/i.test(v.name)?"صوت نسائي — ":/male|man|erkek|ahmet|mehmet/i.test(v.name)?"صوت رجالي — ":"صوت تركي — ")+(v.name||"");picker.append(o)});picker.value=[...picker.options].some(o=>o.value===previous)?previous:"recorded";selectedVoice=picker.value;$("#voiceHint").textContent=turkishVoices.length?"الأصوات الإضافية حسب المتاح على جهازك.":"لا توجد أصوات تركية إضافية مثبتة على الجهاز."}
-let arabicVoices=[],selectedArabicVoice="default";
-function refreshArabicVoices(){if(!("speechSynthesis"in window))return;arabicVoices=speechSynthesis.getVoices().filter(v=>/^ar([_-]|$)/i.test(v.lang));const picker=$("#arabicVoicePicker");if(!picker)return;const previous=picker.value;picker.replaceChildren();const system=document.createElement("option");system.value="default";system.textContent="الصوت العربي الافتراضي على الجهاز";picker.append(system);arabicVoices.forEach((v,i)=>{const o=document.createElement("option");o.value=String(i);o.textContent=(v.name||"صوت عربي")+" — "+v.lang;picker.append(o)});let preferred=previous;try{if(!preferred||preferred==="default")preferred=localStorage.getItem("ta-arabic-voice")||"default"}catch(e){}picker.value=[...picker.options].some(o=>o.value===preferred)?preferred:"default";selectedArabicVoice=picker.value;$("#arabicVoiceHint").textContent=arabicVoices.length?"تم العثور على "+arabicVoices.length+" صوت عربي على جهازك.":"لا توجد أصوات عربية إضافية مثبتة؛ سيُستخدم الصوت الافتراضي إذا كان متاحًا."}
-if("speechSynthesis"in window){refreshTurkishVoices();refreshArabicVoices();speechSynthesis.addEventListener?.("voiceschanged",()=>{refreshTurkishVoices();refreshArabicVoices()})}
+const $=s=>document.querySelector(s);let selectedVoice="recorded",selectedArabicVoice="default",selectedEnglishVoice="default",turkishVoices=[],arabicVoices=[],englishVoices=[];
+function refreshVoiceList(lang,pickerId,storedKey,defaultValue,defaultLabel){
+ if(!("speechSynthesis"in window))return [];
+ const vs=speechSynthesis.getVoices().filter(v=>new RegExp("^"+lang+"([_-]|$)","i").test(v.lang));
+ const picker=$("#"+pickerId);if(!picker)return vs;
+ const previous=picker.value||(()=>{try{return localStorage.getItem(storedKey)||defaultValue}catch(e){return defaultValue}})();
+ picker.replaceChildren();
+ const base=document.createElement("option");base.value=defaultValue;base.textContent=defaultLabel;picker.append(base);
+ vs.forEach(v=>{const o=document.createElement("option");o.value=v.voiceURI;o.textContent=(v.name||lang)+" · "+v.lang;picker.append(o)});
+ picker.value=[...picker.options].some(o=>o.value===previous)?previous:defaultValue;
+ return vs;
+}
+function refreshTurkishVoices(){
+ if(!("speechSynthesis"in window))return;
+ turkishVoices=speechSynthesis.getVoices().filter(v=>/^tr([_-]|$)/i.test(v.lang));
+ const p=$("#voicePicker");if(!p)return;const prev=p.value||selectedVoice;
+ p.replaceChildren();const rec=document.createElement("option");rec.value="recorded";rec.textContent="تسجيل تركي — Fahrettin (ملفات)";p.append(rec);
+ turkishVoices.forEach(v=>{const o=document.createElement("option");o.value=v.voiceURI;o.textContent=(v.name||"صوت تركي")+" · "+v.lang;p.append(o)});
+ const saved=(()=>{try{return localStorage.getItem("ta-turkish-voice")||prev}catch(e){return prev}})();
+ p.value=[...p.options].some(o=>o.value===saved)?saved:"recorded";selectedVoice=p.value;
+ $("#voiceHint").textContent=turkishVoices.length?"أصوات تركية مثبتة على الجهاز؛ تغيير الاختيار يغير النطق.":"لا توجد أصوات تركية إضافية؛ يتوفر التسجيل التركي عند اختيار الملفات.";
+}
+function refreshArabicVoices(){
+ if(!("speechSynthesis"in window))return;
+ arabicVoices=speechSynthesis.getVoices().filter(v=>/^ar([_-]|$)/i.test(v.lang));
+ const p=$("#arabicVoicePicker");if(!p)return;const prev=p.value||selectedArabicVoice;
+ p.replaceChildren();const base=document.createElement("option");base.value="default";base.textContent="الصوت العربي الافتراضي على الجهاز";p.append(base);
+ arabicVoices.forEach(v=>{const o=document.createElement("option");o.value=v.voiceURI;o.textContent=(v.name||"صوت عربي")+" · "+v.lang;p.append(o)});
+ const saved=(()=>{try{return localStorage.getItem("ta-arabic-voice")||prev}catch(e){return prev}})();
+ p.value=[...p.options].some(o=>o.value===saved)?saved:"default";selectedArabicVoice=p.value;
+ $("#arabicVoiceHint").textContent=arabicVoices.length?"الأصوات العربية الموجودة على الجهاز ("+arabicVoices.length+").":"لا يوجد صوت عربي مثبت؛ يعتمد النطق على المتاح في النظام.";
+}
+function refreshEnglishVoices(){
+ if(!("speechSynthesis"in window))return;
+ englishVoices=speechSynthesis.getVoices().filter(v=>/^en([_-]|$)/i.test(v.lang));
+ const p=$("#englishVoicePicker");if(!p)return;const prev=p.value||selectedEnglishVoice;
+ p.replaceChildren();const base=document.createElement("option");base.value="default";base.textContent="الصوت الإنجليزي الافتراضي على الجهاز";p.append(base);
+ englishVoices.forEach(v=>{const o=document.createElement("option");o.value=v.voiceURI;o.textContent=(v.name||"English voice")+" · "+v.lang;p.append(o)});
+ const saved=(()=>{try{return localStorage.getItem("ta-english-voice")||prev}catch(e){return prev}})();
+ p.value=[...p.options].some(o=>o.value===saved)?saved:"default";selectedEnglishVoice=p.value;
+ $("#englishVoiceHint").textContent=englishVoices.length?"أصوات الإنجليزية المتاحة على جهازك ("+englishVoices.length+").":"لا يوجد صوت إنجليزي إضافي مثبت.";
+}
+function selectedSystemVoice(lang){
+ const list=lang.startsWith("tr")?turkishVoices:lang.startsWith("ar")?arabicVoices:englishVoices;
+ const uri=lang.startsWith("tr")?selectedVoice:lang.startsWith("ar")?selectedArabicVoice:selectedEnglishVoice;
+ return list.find(v=>v.voiceURI===uri)||null;
+}
+if("speechSynthesis"in window){refreshTurkishVoices();refreshArabicVoices();refreshEnglishVoices();speechSynthesis.addEventListener?.("voiceschanged",()=>{refreshTurkishVoices();refreshArabicVoices();refreshEnglishVoices()})}
 const voicePicker=$("#voicePicker");if(voicePicker)voicePicker.addEventListener("change",()=>{selectedVoice=voicePicker.value;try{localStorage.setItem("ta-turkish-voice",selectedVoice)}catch(e){}});
 const arabicVoicePicker=$("#arabicVoicePicker");if(arabicVoicePicker)arabicVoicePicker.addEventListener("change",()=>{selectedArabicVoice=arabicVoicePicker.value;try{localStorage.setItem("ta-arabic-voice",selectedArabicVoice)}catch(e){}});
-try{const v=localStorage.getItem("ta-turkish-voice");if(v&&voicePicker){selectedVoice=v;if([...voicePicker.options].some(o=>o.value===v))voicePicker.value=v}}catch(e){}
-try{const v=localStorage.getItem("ta-arabic-voice");if(v&&arabicVoicePicker){selectedArabicVoice=v;if([...arabicVoicePicker.options].some(o=>o.value===v))arabicVoicePicker.value=v}}catch(e){}
+const englishVoicePicker=$("#englishVoicePicker");if(englishVoicePicker)englishVoicePicker.addEventListener("change",()=>{selectedEnglishVoice=englishVoicePicker.value;try{localStorage.setItem("ta-english-voice",selectedEnglishVoice)}catch(e){}});
 function lessons(){return course==="tr"?L:EN}function pair(x){return direction.endsWith("-ar")?[x[0],x[1]]:[x[1],x[0]]}
 function langs(){return direction==="tr-ar"?["tr-TR","ar-SA"]:direction==="ar-tr"?["ar-SA","tr-TR"]:direction==="en-ar"?["en-US","ar-SA"]:["ar-SA","en-US"]}
 function stopPlayback(){playing=false;paused=false;queue=[];queueIndex=0;if(queueAudio){queueAudio.pause();queueAudio.currentTime=0;queueAudio=null}if("speechSynthesis"in window)speechSynthesis.cancel();if($("#unitPlay"))$("#unitPlay").textContent="▶ استمع إلى الوحدة كاملة"}
 function say(text,lang,onEnd,clipKey=text,rate=0.72){if(lang.startsWith('tr')&&selectedVoice==='recorded'&&humanAudio[audioKey(clipKey)]?.file){queueAudio=new Audio(humanAudio[audioKey(clipKey)].file);queueAudio.playbackRate=rate;queueAudio.onended=()=>{queueAudio=null;onEnd()};queueAudio.onerror=()=>{queueAudio=null;sayTTS(text,lang,onEnd,rate)};queueAudio.play().catch(()=>{queueAudio=null;sayTTS(text,lang,onEnd,rate)});return}sayTTS(text,lang,onEnd,rate)}
-function sayTTS(text,lang,onEnd,rate=0.72){if(!("speechSynthesis"in window)){onEnd();return}queueUtterance=new SpeechSynthesisUtterance(text);queueUtterance.lang=lang;queueUtterance.rate=rate;if(lang.startsWith("tr")&&selectedVoice!=="recorded"&&turkishVoices[Number(selectedVoice)])queueUtterance.voice=turkishVoices[Number(selectedVoice)];if(lang.startsWith("ar")&&selectedArabicVoice!=="default"&&arabicVoices[Number(selectedArabicVoice)])queueUtterance.voice=arabicVoices[Number(selectedArabicVoice)];queueUtterance.onend=()=>{queueUtterance=null;onEnd()};queueUtterance.onerror=()=>{queueUtterance=null;onEnd()};speechSynthesis.speak(queueUtterance)}
+function sayTTS(text,lang,onEnd,rate=0.72){if(!("speechSynthesis"in window)){onEnd();return}queueUtterance=new SpeechSynthesisUtterance(text);queueUtterance.lang=lang;queueUtterance.rate=rate;const chosen=selectedSystemVoice(lang);if(chosen)queueUtterance.voice=chosen;queueUtterance.onend=()=>{queueUtterance=null;onEnd()};queueUtterance.onerror=()=>{queueUtterance=null;onEnd()};speechSynthesis.speak(queueUtterance)}
 function nextQueue(){if(!playing||paused)return;if(queueIndex>=queue.length){stopPlayback();$("#feedback").textContent="انتهى تشغيل الوحدة.";return}const x=queue[queueIndex++];$("#feedback").textContent="تشغيل "+queueIndex+" من "+queue.length;setTimeout(()=>{if(playing&&!paused)say(x.text,x.lang,nextQueue,x.clip,x.rate||0.72)},650)}
 function toggleUnit(){if(playing&&paused){paused=false;if(queueAudio)queueAudio.play().catch(()=>{});else if("speechSynthesis"in window)speechSynthesis.resume();$("#unitPlay").textContent="⏸ إيقاف مؤقت";return}if(playing){paused=true;if(queueAudio)queueAudio.pause();if("speechSynthesis"in window)speechSynthesis.pause();$("#unitPlay").textContent="▶ استكمال";return}const l=lessons()[cur],ll=langs();queue=[];l.w.forEach(x=>{const p=pair(x),t0=ll[0].startsWith("tr")?pronunciationText(l.t,p[0]):p[0],t1=ll[1].startsWith("tr")?pronunciationText(l.t,p[1]):p[1];queue.push({text:t0,lang:ll[0],clip:p[0],rate:0.72},{text:t0,lang:ll[0],clip:p[0],rate:0.72},{text:t1,lang:ll[1],clip:p[1],rate:0.78})});(l.examples||[]).forEach(x=>{const p=pair(x),t0=ll[0].startsWith("tr")?pronunciationText(l.t,p[0]):p[0],t1=ll[1].startsWith("tr")?pronunciationText(l.t,p[1]):p[1];queue.push({text:t0,lang:ll[0],clip:p[0],rate:0.72},{text:t0,lang:ll[0],clip:p[0],rate:0.72},{text:t1,lang:ll[1],clip:p[1],rate:0.78})});queueIndex=0;playing=true;paused=false;$("#unitPlay").textContent="⏸ إيقاف مؤقت";nextQueue()}
 function progress(){const n=Object.values(done).filter(Boolean).length;$("#doneCount").textContent=n;$("#totalCount").textContent=lessons().length;$("#progressBar").style.width=n/lessons().length*100+"%"}
