@@ -15,7 +15,7 @@ names=dict(json.loads(m.group(1)))
 assert set(names)==set(expected) and names["A a"]=="a" and names["Ğ ğ"]=="yumuşak ge"
 for lesson in tr: assert len(lesson.get("w",[]))>=12 and len(lesson.get("q",[]))>=5
 m=re.search(r"const EN_MORE=(\[.*?\]);",source,re.S); assert m
-en_more=json.loads(m.group(1)); assert len(en_more)>=8
+en_more=json.loads(m.group(1)); assert len(en_more)>=14
 for lesson in en_more: assert len(lesson[2])>=12 and len(lesson[3])>=2
 m=re.search(r"const AR=makeExtraLessons\((\[.*\]),\"ar\"\);",source,re.S); assert m
 ar=json.loads(m.group(1)); assert len(ar)>=18
