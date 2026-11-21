@@ -18,6 +18,7 @@ jobs:
     env:
       ANDROID_HOME: /usr/local/lib/android/sdk
       ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+      ANDROID_VERSION_CODE: ${{ github.run_number }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,8 +38,8 @@ jobs:
         run: |
           SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
           test -n "$SDKMANAGER"
-          yes | "$SDKMANAGER" --licenses || true
-          "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          yes | "$SDKMAN" --licenses || true
+          "$SDKMAN" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Validate application sources
         run: |
@@ -86,22 +87,66 @@ jobs:
           npx cap add android
           npx cap sync android
 
-      - name: Build debug APK
+      - name: Configure permanent Android signing
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$ANDROID_KEYSTORE_BASE64"
+          test -n "$ANDROID_KEYSTORE_PASSWORD"
+          test -n "$ANDROID_KEY_ALIAS"
+          test -n "$ANDROID_KEY_PASSWORD"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/release-signing.jks
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, os
+          p = Path('android/app/build.gradle')
+          s = p.read_text()
+          if 'signingConfigs {' in s:
+              raise SystemExit('Unexpected existing signingConfigs; refusing unsafe duplicate edit')
+          signing = """
+          signingConfigs {
+              release {
+                  storeFile file("release-signing.jks")
+                  storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                  keyAlias System.getenv("ANDROID_KEY_ALIAS")
+                  keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+              }
+          }
+          """.strip()
+          s, n = re.subn(r'(\n\s*buildTypes\s*\{)', lambda m: '\n' + signing + '\n' + m.group(1), s, count=1)
+          if n != 1:
+              raise SystemExit('Could not safely insert signingConfigs block')
+          s, n = re.subn(r'(buildTypes\s*\{\s*release\s*\{)', r'\1\n            signingConfig signingConfigs.release', s, count=1)
+          if n != 1:
+              raise SystemExit('Could not safely attach release signing config')
+          s, n = re.subn(r'(defaultConfig\s*\{[^}]*?versionCode\s+)\d+', lambda m: m.group(1) + os.environ['ANDROID_VERSION_CODE'], s, count=1, flags=re.S)
+          if n != 1:
+              raise SystemExit('Could not safely set monotonic versionCode')
+          p.write_text(s)
+          PY
+          keytool -list -keystore android/app/release-signing.jks -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias "$ANDROID_KEY_ALIAS" -keypass "$ANDROID_KEY_PASSWORD"
+
+      - name: Build signed release APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease
 
-      - name: Verify APK debug signature
+      - name: Verify release APK signature and package
         run: |
-          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          APK="android/app/build/outputs/apk/release/app-release.apk"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep -F "package: name='com.turkce.akademi.v3'"
 
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
           name: Learn-Languages-Android-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -123,6 +168,6 @@ jobs:
           name: Learn Languages Android APK
           body: |
             Beginner learning app with Turkish, English, and Arabic courses.
-            Download app-debug.apk and install on Android.
-          files: release/app-debug.apk
+            Download app-release.apk and install on Android. Future updates use the same release signing key.
+          files: release/app-release.apk
           make_latest: true
