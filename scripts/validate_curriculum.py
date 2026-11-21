@@ -25,7 +25,7 @@ assert "course=direction===\"tr-ar\"?\"tr\":direction===\"en-ar\"?\"en\":\"ar\";
 for pair in ["tr-ar","en-ar","ar-en"]: assert pair in html
 assert 'option value="ar">العربية' in html and 'id="englishVoicePicker"' in html
 assert 'id="previewTarget"' in html and 'id="previewMeaning"' in html
-assert 'queueUtterance.rate=rate' in source and 'queueAudio.playbackRate=Math.max(rate,0.78)' in source
+assert 'synth.addEventListener?.("voiceschanged",retry,{once:true})' in source and 'synth.resume()' in source and 'queueUtterance.rate=rate' in source and 'queueAudio.playbackRate=Math.max(rate,0.78)' in source
 assert 'rate:0.68' in source and 'rate:0.74' in source
 assert 'const seq=[{text:p[0],lang:ll[0],rate:0.68},{text:p[0],lang:ll[0],rate:0.68},{text:p[1],lang:ll[1],rate:0.74},{text:p[1],lang:ll[1],rate:0.74}]' in source
 assert 'speechSynthesis.cancel()' in source and 'audioKey(clipKey)' in source
