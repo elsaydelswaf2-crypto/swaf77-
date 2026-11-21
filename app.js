@@ -85,4 +85,4 @@ $("#previewTarget").addEventListener("click",()=>{const ll=langs(),sample=course
 $("#previewMeaning").addEventListener("click",()=>{const ll=langs(),sample=course==="tr"?"مرحبًا":course==="en"?"مرحبًا":"Hello";previewSelected(ll[1],sample,0.74)});
 $("#audioOrderPicker").value=audioOrder;$("#audioOrderPicker").addEventListener("change",()=>{audioOrder=$("#audioOrderPicker").value;try{localStorage.setItem("ta-audio-order",audioOrder)}catch(e){}});$("#unitPlay").addEventListener("click",toggleUnit);$("#unitStop").addEventListener("click",stopPlayback);progress();show(0);
 if("serviceWorker"in navigator&&location.protocol.startsWith("http"))addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
-(()=>{const share=$("#copyShare"),status=$("#shareStatus");if(!share)return;const message="تعلم لغات — تطبيق لتعلّم التركية والإنجليزية والعربية\\n\\nدروس مفردات وعبارات يومية، ترجمة، ونطق صوتي ببطء مع مراجعة واختبارات قصيرة.\\n\\nابدأ التعلّم خطوة بخطوة.";share.addEventListener("click",()=>{status.textContent="جارٍ فتح واتساب لمشاركة رابط تنزيل التطبيق";location.href="https://wa.me/?text="+encodeURIComponent(message)})})();
+
