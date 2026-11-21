@@ -82,7 +82,7 @@ jobs:
           if [ -d audio ]; then cp -R audio www/audio; fi
           npm init -y
           npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
-          npx cap init "تعلم لغات" com.turkce.akademi.v2 --web-dir=www
+          npx cap init "تعلم لغات" com.turkce.akademi.v3 --web-dir=www
           npx cap add android
           npx cap sync android
 
