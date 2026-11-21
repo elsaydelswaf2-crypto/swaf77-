@@ -36,7 +36,8 @@ assert 'https://wa.me/?text=' not in source and 'copyShare' not in html and 'sha
 assert 'location.href="https://wa.me/' not in source and 'navigator.share' not in source and 'mailto:' not in source
 assert 'navigator.share' not in source and 'mailto:' not in source
 for id in ["arabicVoicePicker","arabicVoiceHint","englishVoicePicker","englishVoiceHint"]: assert id in html
-assert "voiceURI" in source and "selectedSystemVoice" in source and "audioOrderPicker" in source and "pushAudioPair" in source and "Math.max(rate,0.78)" in source and "syncMediaSession" in source
+assert "voiceURI" in source and "selectedSystemVoice" in source and "pushAudioPair" in source and "Math.max(rate,0.78)" in source and "syncMediaSession" in source
+assert "audioOrderPicker" not in source and "audioOrderPicker" not in html
 manifest=json.loads(Path("manifest.webmanifest").read_text(encoding="utf-8"))
 assert manifest["name"]=="تعلم لغات"
 print(f"PASS: {len(tr)} Turkish, {4+len(en_more)} English, {len(ar)} Arabic lessons; 29 Turkish letters; slower paired audio; three courses.")
