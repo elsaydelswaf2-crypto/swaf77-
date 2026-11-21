@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression checks for beginner language curriculum, audio, and share behavior."""
+"""Regression checks for beginner language curriculum and local-only behavior."""
 import json, re
 from pathlib import Path
 source=Path("app.js").read_text(encoding="utf-8")
@@ -29,8 +29,8 @@ assert 'queueUtterance.rate=rate' in source and 'queueAudio.playbackRate=Math.ma
 assert 'rate:0.68' in source and 'rate:0.74' in source
 assert 'const seq=[{text:p[0],lang:ll[0],rate:0.68},{text:p[0],lang:ll[0],rate:0.68},{text:p[1],lang:ll[1],rate:0.74},{text:p[1],lang:ll[1],rate:0.74}]' in source
 assert 'speechSynthesis.cancel()' in source and 'audioKey(clipKey)' in source
-assert 'https://wa.me/?text=' in source and 'encodeURIComponent(message)' in source
-assert 'const message="تعلم لغات — تطبيق لتعلّم التركية والإنجليزية والعربية' in source and 'github.com/elsaydelswaf2-crypto/swaf77-' not in source and 'mailto:' not in source
+assert 'https://wa.me/?text=' not in source and 'copyShare' not in html and 'shareStatus' not in html
+assert 'location.href="https://wa.me/' not in source and 'navigator.share' not in source and 'mailto:' not in source
 assert 'navigator.share' not in source and 'mailto:' not in source
 for id in ["arabicVoicePicker","arabicVoiceHint","englishVoicePicker","englishVoiceHint"]: assert id in html
 assert "voiceURI" in source and "selectedSystemVoice" in source and "audioOrderPicker" in source and "pushAudioPair" in source and "Math.max(rate,0.78)" in source and "syncMediaSession" in source
