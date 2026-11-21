@@ -27,10 +27,10 @@ assert 'option value="ar">العربية' in html and 'id="englishVoicePicker"' 
 assert 'id="previewTarget"' in html and 'id="previewMeaning"' in html
 assert 'queueUtterance.rate=rate' in source and 'queueAudio.playbackRate=Math.max(rate,0.78)' in source
 assert 'rate:0.68' in source and 'rate:0.74' in source
-assert 'say(p[0],ll[0],()=>say(p[0],ll[0],()=>say(p[1],ll[1],()=>say(p[1]' in source
+assert 'const seq=[{text:p[0],lang:ll[0],rate:0.68},{text:p[0],lang:ll[0],rate:0.68},{text:p[1],lang:ll[1],rate:0.74},{text:p[1],lang:ll[1],rate:0.74}]' in source
 assert 'speechSynthesis.cancel()' in source and 'audioKey(clipKey)' in source
 assert 'https://wa.me/?text=' in source and 'encodeURIComponent(message)' in source
-assert 'releases/latest/download/app-debug.apk' in source
+assert 'const message="تعلم لغات — تطبيق لتعلّم التركية والإنجليزية والعربية' in source and 'github.com/elsaydelswaf2-crypto/swaf77-' not in source and 'mailto:' not in source
 assert 'navigator.share' not in source and 'mailto:' not in source
 for id in ["arabicVoicePicker","arabicVoiceHint","englishVoicePicker","englishVoiceHint"]: assert id in html
 assert "voiceURI" in source and "selectedSystemVoice" in source and "audioOrderPicker" in source and "pushAudioPair" in source and "Math.max(rate,0.78)" in source and "syncMediaSession" in source
