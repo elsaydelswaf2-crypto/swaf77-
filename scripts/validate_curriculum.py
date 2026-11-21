@@ -17,7 +17,7 @@ for lesson in tr: assert len(lesson.get("w",[]))>=12 and len(lesson.get("q",[]))
 m=re.search(r"const EN_MORE=(\[.*?\]);",source,re.S); assert m
 en_more=json.loads(m.group(1)); assert len(en_more)>=8
 for lesson in en_more: assert len(lesson[2])>=12 and len(lesson[3])>=2
-m=re.search(r"const AR=makeExtraLessons\((\[.*?\]),\"ar\"\);",source,re.S); assert m
+m=re.search(r"const AR=makeExtraLessons\((\[.*\]),\"ar\"\);",source,re.S); assert m
 ar=json.loads(m.group(1)); assert len(ar)>=18
 for lesson in ar: assert len(lesson[2])>=12 and len(lesson[3])>=2
 assert "function lessons(){return course===\"tr\"?L:course===\"en\"?EN:AR}" in source
